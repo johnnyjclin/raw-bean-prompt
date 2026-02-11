@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Upload, Rocket } from "lucide-react";
+import { ArrowLeft, Rocket } from "lucide-react";
 import Link from "next/link";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { TOKEN_FACTORY_ABI, TOKEN_FACTORY_ADDRESS } from "@/lib/contract-abi";
+import { parseEther } from "viem";
+import { TOKEN_FACTORY_BONDING_CURVE_ABI, TOKEN_FACTORY_BONDING_CURVE_ADDRESS } from "@/lib/contract-abi";
 
 export default function LaunchPage() {
   const router = useRouter();
@@ -16,7 +17,8 @@ export default function LaunchPage() {
     prompt: "",
     description: "",
     category: "",
-    initialSupply: "1000000"
+    basePrice: "0.000001",
+    priceIncrement: "0.0000001",
   });
 
   const { data: hash, writeContract, isPending } = useWriteContract();
@@ -33,8 +35,8 @@ export default function LaunchPage() {
 
     try {
       writeContract({
-        address: TOKEN_FACTORY_ADDRESS as `0x${string}`,
-        abi: TOKEN_FACTORY_ABI,
+        address: TOKEN_FACTORY_BONDING_CURVE_ADDRESS as `0x${string}`,
+        abi: TOKEN_FACTORY_BONDING_CURVE_ABI,
         functionName: "createAbilityToken",
         args: [
           formData.name,
@@ -42,7 +44,8 @@ export default function LaunchPage() {
           formData.prompt,
           formData.description,
           formData.category,
-          BigInt(formData.initialSupply)
+          parseEther(formData.basePrice),
+          parseEther(formData.priceIncrement),
         ]
       });
     } catch (error) {
@@ -161,7 +164,43 @@ export default function LaunchPage() {
           </div>
         </div>
 
-        {/* Initial Supply Section */}
+        {/* Bonding Curve Pricing Section */}
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-8">
+          <h2 className="text-xl font-bold mb-2">Bonding Curve Pricing</h2>
+          <p className="text-gray-400 text-sm mb-6">
+            Price rises as more tokens are bought, and falls as they are sold.
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Base Price (ETH)</label>
+              <input
+                type="number"
+                step="0.0000001"
+                min="0.0000001"
+                value={formData.basePrice}
+                onChange={(e) => setFormData({ ...formData, basePrice: e.target.value })}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">Price of the first token</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Price Increment (ETH)</label>
+              <input
+                type="number"
+                step="0.00000001"
+                min="0"
+                value={formData.priceIncrement}
+                onChange={(e) => setFormData({ ...formData, priceIncrement: e.target.value })}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">Price increase per token minted</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Initial Supply Section (disabled — bonding curve mints on demand) */}
         {/* <div className="bg-gray-900 border border-gray-800 rounded-xl p-8">
           <h2 className="text-xl font-bold mb-2">Initial Supply</h2>
           <p className="text-gray-400 text-sm mb-6">

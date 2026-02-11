@@ -7,6 +7,9 @@ import { getAllTokenAddresses, getTokenInfo, delay } from "@/lib/contract-helper
 import { TradingPanel } from "@/components/TradingPanel";
 import { PriceChart } from "@/components/PriceChart";
 import { TradingBotToggle } from "@/components/TradingBotToggle";
+import { ABILITY_TOKEN_BONDING_CURVE_ABI } from "@/lib/contract-abi";
+import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { parseEther } from "viem";
 
 interface TokenInfo {
   address: string;
@@ -15,7 +18,11 @@ interface TokenInfo {
   prompt: string;
   description: string;
   creator: string;
-  totalSupply: string;
+  circulatingSupply: string;
+  basePrice: string;
+  priceIncrement: string;
+  buyPrice1: string;
+  sellPrice1: string;
 }
 
 export default function Home() {
@@ -24,6 +31,11 @@ export default function Home() {
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [pendingTxHash, setPendingTxHash] = useState<`0x${string}` | undefined>(undefined);
+
+  const { writeContractAsync } = useWriteContract();
+  const { isSuccess: txConfirmed } = useWaitForTransactionReceipt({ hash: pendingTxHash });
 
   // Fetch all tokens using ethers.js
   useEffect(() => {
@@ -65,17 +77,47 @@ export default function Home() {
     setTimeout(() => setCopiedAddress(null), 2000);
   };
 
-  // Trading handlers (will be connected to contract later)
-  const handleBuyToken = async (ethAmount: string) => {
-    console.log("Buying token with", ethAmount, "ETH");
-    // TODO: Connect to contract buyToken function
-    alert(`Buy function will be connected when contract is updated!\nAmount: ${ethAmount} ETH`);
+  // When tx is confirmed, refresh token info + balance
+  useEffect(() => {
+    if (!txConfirmed || !selectedToken) return;
+    async function refresh() {
+      if (!selectedToken) return;
+      const info = await getTokenInfo(selectedToken.address);
+      setSelectedToken({ address: selectedToken.address, ...info });
+      setTokens((prev) =>
+        prev.map((t) =>
+          t.address === selectedToken.address ? { address: t.address, ...info } : t
+        )
+      );
+      setRefreshKey((k) => k + 1); // trigger TradingPanel balance refetch
+      setPendingTxHash(undefined);
+    }
+    refresh();
+  }, [txConfirmed]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Buy: send tx and store hash for confirmation tracking
+  const handleBuyToken = async (amount: string, ethCost: string) => {
+    if (!selectedToken) return;
+    const hash = await writeContractAsync({
+      address: selectedToken.address as `0x${string}`,
+      abi: ABILITY_TOKEN_BONDING_CURVE_ABI,
+      functionName: "buy",
+      args: [BigInt(amount)],
+      value: parseEther(ethCost),
+    });
+    setPendingTxHash(hash);
   };
 
-  const handleSellToken = async (tokenAmount: string) => {
-    console.log("Selling", tokenAmount, "tokens");
-    // TODO: Connect to contract sellToken function
-    alert(`Sell function will be connected when contract is updated!\nAmount: ${tokenAmount} tokens`);
+  // Sell: send tx and store hash for confirmation tracking
+  const handleSellToken = async (amount: string) => {
+    if (!selectedToken) return;
+    const hash = await writeContractAsync({
+      address: selectedToken.address as `0x${string}`,
+      abi: ABILITY_TOKEN_BONDING_CURVE_ABI,
+      functionName: "sell",
+      args: [BigInt(amount)],
+    });
+    setPendingTxHash(hash);
   };
 
   const handleBotToggle = (enabled: boolean) => {
@@ -137,13 +179,23 @@ export default function Home() {
                 onClick={() => setSelectedToken(token)}
                 className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-green-500 transition-colors cursor-pointer"
               >
+                {/* Name & Symbol */}
                 <div className="mb-4">
                   <h3 className="text-xl font-bold mb-1">{token.name}</h3>
                   <p className="text-green-500 font-mono text-sm">${token.symbol}</p>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <span>Creator:</span>
+                {/* Current Price */}
+                <div className="mb-4 bg-gray-800 rounded-lg px-4 py-3 flex items-center justify-between">
+                  <span className="text-xs text-gray-400">Buy Price</span>
+                  <span className="text-green-400 font-mono font-semibold text-sm">
+                    {parseFloat(token.buyPrice1).toFixed(8)} ETH
+                  </span>
+                </div>
+
+                {/* Supply & Creator */}
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <span>Supply: {token.circulatingSupply}</span>
                   <button
                     type="button"
                     onClick={(e) => {
@@ -155,10 +207,10 @@ export default function Home() {
                     <span className="font-mono">{token.creator.slice(0, 6)}...{token.creator.slice(-4)}</span>
                     <Copy className="w-3 h-3" />
                   </button>
-                  {copiedAddress === token.creator && (
-                    <span className="text-green-500 text-xs">✓ Copied</span>
-                  )}
                 </div>
+                {copiedAddress === token.creator && (
+                  <span className="text-green-500 text-xs mt-1 block">✓ Copied</span>
+                )}
               </div>
             ))}
           </div>
@@ -246,16 +298,20 @@ export default function Home() {
                 {/* Right Column - Trading Panel */}
                 <div className="space-y-6">
                   {/* Price Chart */}
-                  <PriceChart 
+                  <PriceChart
                     tokenSymbol={selectedToken.symbol}
-                    currentPrice="0.001"
+                    currentPrice={selectedToken.buyPrice1}
+                    sellPrice={selectedToken.sellPrice1}
+                    circulatingSupply={selectedToken.circulatingSupply}
                   />
 
                   {/* Trading Panel */}
                   <TradingPanel
+                    key={`${selectedToken.address}-${refreshKey}`}
                     tokenAddress={selectedToken.address}
                     tokenSymbol={selectedToken.symbol}
-                    currentPrice="0.001"
+                    currentPrice={selectedToken.buyPrice1}
+                    sellPrice={selectedToken.sellPrice1}
                     onBuy={handleBuyToken}
                     onSell={handleSellToken}
                   />

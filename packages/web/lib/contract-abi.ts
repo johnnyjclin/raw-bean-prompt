@@ -1,38 +1,15 @@
+// ABI for AbilityTokenFactory (fixed price version)
 export const TOKEN_FACTORY_ABI = [
 	{
 		anonymous: false,
 		inputs: [
-			{
-				indexed: true,
-				internalType: "address",
-				name: "tokenAddress",
-				type: "address",
-			},
-			{
-				indexed: true,
-				internalType: "address",
-				name: "creator",
-				type: "address",
-			},
-			{ indexed: false, internalType: "string", name: "name", type: "string" },
-			{
-				indexed: false,
-				internalType: "string",
-				name: "symbol",
-				type: "string",
-			},
-			{
-				indexed: false,
-				internalType: "string",
-				name: "prompt",
-				type: "string",
-			},
-			{
-				indexed: false,
-				internalType: "uint256",
-				name: "timestamp",
-				type: "uint256",
-			},
+			{ indexed: true,  internalType: "address", name: "tokenAddress", type: "address" },
+			{ indexed: true,  internalType: "address", name: "creator",      type: "address" },
+			{ indexed: false, internalType: "string",  name: "name",         type: "string"  },
+			{ indexed: false, internalType: "string",  name: "symbol",       type: "string"  },
+			{ indexed: false, internalType: "string",  name: "prompt",       type: "string"  },
+			{ indexed: false, internalType: "uint256", name: "price",        type: "uint256" },
+			{ indexed: false, internalType: "uint256", name: "timestamp",    type: "uint256" },
 		],
 		name: "AbilityTokenCreated",
 		type: "event",
@@ -46,12 +23,13 @@ export const TOKEN_FACTORY_ABI = [
 	},
 	{
 		inputs: [
-			{ internalType: "string", name: "name", type: "string" },
-			{ internalType: "string", name: "symbol", type: "string" },
-			{ internalType: "string", name: "prompt", type: "string" },
-			{ internalType: "string", name: "description", type: "string" },
-			{ internalType: "string", name: "category", type: "string" },
+			{ internalType: "string",  name: "name",          type: "string"  },
+			{ internalType: "string",  name: "symbol",        type: "string"  },
+			{ internalType: "string",  name: "prompt",        type: "string"  },
+			{ internalType: "string",  name: "description",   type: "string"  },
+			{ internalType: "string",  name: "category",      type: "string"  },
 			{ internalType: "uint256", name: "initialSupply", type: "uint256" },
+			{ internalType: "uint256", name: "price",         type: "uint256" },
 		],
 		name: "createAbilityToken",
 		outputs: [{ internalType: "address", name: "", type: "address" }],
@@ -83,17 +61,16 @@ export const TOKEN_FACTORY_ABI = [
 		type: "function",
 	},
 	{
-		inputs: [
-			{ internalType: "address", name: "tokenAddress", type: "address" },
-		],
+		inputs: [{ internalType: "address", name: "tokenAddress", type: "address" }],
 		name: "getTokenInfo",
 		outputs: [
-			{ internalType: "string", name: "name", type: "string" },
-			{ internalType: "string", name: "symbol", type: "string" },
-			{ internalType: "string", name: "prompt", type: "string" },
-			{ internalType: "string", name: "description", type: "string" },
-			{ internalType: "address", name: "creator", type: "address" },
+			{ internalType: "string",  name: "name",        type: "string"  },
+			{ internalType: "string",  name: "symbol",      type: "string"  },
+			{ internalType: "string",  name: "prompt",      type: "string"  },
+			{ internalType: "string",  name: "description", type: "string"  },
+			{ internalType: "address", name: "creator",     type: "address" },
 			{ internalType: "uint256", name: "totalSupply", type: "uint256" },
+			{ internalType: "uint256", name: "price",       type: "uint256" },
 		],
 		stateMutability: "view",
 		type: "function",
@@ -107,5 +84,256 @@ export const TOKEN_FACTORY_ABI = [
 	},
 ] as const;
 
+// ABI for AbilityTokenFactory_BondingCurve
+export const TOKEN_FACTORY_BONDING_CURVE_ABI = [
+	{
+		anonymous: false,
+		inputs: [
+			{ indexed: true,  internalType: "address", name: "tokenAddress",   type: "address" },
+			{ indexed: true,  internalType: "address", name: "creator",        type: "address" },
+			{ indexed: false, internalType: "string",  name: "name",           type: "string"  },
+			{ indexed: false, internalType: "string",  name: "symbol",         type: "string"  },
+			{ indexed: false, internalType: "string",  name: "prompt",         type: "string"  },
+			{ indexed: false, internalType: "uint256", name: "basePrice",      type: "uint256" },
+			{ indexed: false, internalType: "uint256", name: "priceIncrement", type: "uint256" },
+			{ indexed: false, internalType: "uint256", name: "timestamp",      type: "uint256" },
+		],
+		name: "AbilityTokenCreated",
+		type: "event",
+	},
+	{
+		inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		name: "allAbilityTokens",
+		outputs: [{ internalType: "address", name: "", type: "address" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [
+			{ internalType: "string",  name: "name",           type: "string"  },
+			{ internalType: "string",  name: "symbol",         type: "string"  },
+			{ internalType: "string",  name: "prompt",         type: "string"  },
+			{ internalType: "string",  name: "description",    type: "string"  },
+			{ internalType: "string",  name: "category",       type: "string"  },
+			{ internalType: "uint256", name: "basePrice",      type: "uint256" },
+			{ internalType: "uint256", name: "priceIncrement", type: "uint256" },
+		],
+		name: "createAbilityToken",
+		outputs: [{ internalType: "address", name: "", type: "address" }],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [
+			{ internalType: "address", name: "", type: "address" },
+			{ internalType: "uint256", name: "", type: "uint256" },
+		],
+		name: "creatorTokens",
+		outputs: [{ internalType: "address", name: "", type: "address" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "getAllAbilityTokens",
+		outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [{ internalType: "address", name: "creator", type: "address" }],
+		name: "getCreatorTokens",
+		outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [{ internalType: "address", name: "tokenAddress", type: "address" }],
+		name: "getTokenInfo",
+		outputs: [
+			{ internalType: "string",  name: "name",             type: "string"  },
+			{ internalType: "string",  name: "symbol",           type: "string"  },
+			{ internalType: "string",  name: "prompt",           type: "string"  },
+			{ internalType: "string",  name: "description",      type: "string"  },
+			{ internalType: "address", name: "creator",          type: "address" },
+			{ internalType: "uint256", name: "circulatingSupply",type: "uint256" },
+			{ internalType: "uint256", name: "basePrice",        type: "uint256" },
+			{ internalType: "uint256", name: "priceIncrement",   type: "uint256" },
+			{ internalType: "uint256", name: "buyPrice1",        type: "uint256" },
+			{ internalType: "uint256", name: "sellPrice1",       type: "uint256" },
+		],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "getTotalAbilityTokens",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [{ internalType: "address", name: "agent", type: "address" }],
+		name: "getActiveAbilities",
+		outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
+		stateMutability: "view",
+		type: "function",
+	},
+] as const;
+
+// ABI for AbilityToken (fixed price version) — for direct buy/sell calls
+export const ABILITY_TOKEN_ABI = [
+	{
+		inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
+		name: "buy",
+		outputs: [],
+		stateMutability: "payable",
+		type: "function",
+	},
+	{
+		inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
+		name: "sell",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
+		name: "getPrice",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "availableSupply",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "price",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [{ internalType: "address", name: "account", type: "address" }],
+		name: "balanceOf",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{ indexed: true,  internalType: "address", name: "agent",  type: "address" },
+			{ indexed: false, internalType: "uint256", name: "amount", type: "uint256" },
+		],
+		name: "AbilityActivated",
+		type: "event",
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{ indexed: true,  internalType: "address", name: "agent",  type: "address" },
+			{ indexed: false, internalType: "uint256", name: "amount", type: "uint256" },
+		],
+		name: "AbilityDeactivated",
+		type: "event",
+	},
+] as const;
+
+// ABI for AbilityToken_BondingCurve — for direct buy/sell calls
+export const ABILITY_TOKEN_BONDING_CURVE_ABI = [
+	{
+		inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
+		name: "buy",
+		outputs: [],
+		stateMutability: "payable",
+		type: "function",
+	},
+	{
+		inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
+		name: "sell",
+		outputs: [],
+		stateMutability: "nonpayable",
+		type: "function",
+	},
+	{
+		inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
+		name: "getBuyPrice",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
+		name: "getSellPrice",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "circulatingSupply",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "basePrice",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "priceIncrement",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [],
+		name: "reserveBalance",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		inputs: [{ internalType: "address", name: "account", type: "address" }],
+		name: "balanceOf",
+		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+		stateMutability: "view",
+		type: "function",
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{ indexed: true,  internalType: "address", name: "agent",  type: "address" },
+			{ indexed: true,  internalType: "address", name: "token",  type: "address" },
+			{ indexed: false, internalType: "uint256", name: "amount", type: "uint256" },
+		],
+		name: "AbilityActivated",
+		type: "event",
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{ indexed: true,  internalType: "address", name: "agent",  type: "address" },
+			{ indexed: true,  internalType: "address", name: "token",  type: "address" },
+			{ indexed: false, internalType: "uint256", name: "amount", type: "uint256" },
+		],
+		name: "AbilityDeactivated",
+		type: "event",
+	},
+] as const;
+
 export const TOKEN_FACTORY_ADDRESS =
-	"0x0Ead78Df05e005F69ccE486C6A795badD90c6B45" as const;
+	"0x3F54dFDEE120605F9EdC0Bc7d09BE89581C34314" as const;
+
+export const TOKEN_FACTORY_BONDING_CURVE_ADDRESS =
+	"0x713b7F49F5700e24544710fe0dF868793ABFD8D5" as const;

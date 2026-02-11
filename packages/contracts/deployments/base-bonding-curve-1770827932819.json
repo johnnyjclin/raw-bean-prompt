@@ -1,0 +1,9 @@
+{
+  "network": "base",
+  "chainId": 8453,
+  "factoryAddress": "0x713b7F49F5700e24544710fe0dF868793ABFD8D5",
+  "type": "bonding-curve",
+  "deployer": "0x984f6F3b1Dba353dc952C7A3a8E340B48A89C947",
+  "timestamp": "2026-02-11T16:38:52.228Z",
+  "blockNumber": 42019292
+}

@@ -9,6 +9,9 @@
     "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
     "deploy:base-sepolia": "hardhat run scripts/deploy.ts --network baseSepolia",
     "deploy:base": "hardhat run scripts/deploy.ts --network base",
+    "deploy:bonding-curve:local": "hardhat run scripts/deploy-bonding-curve.ts --network localhost",
+    "deploy:bonding-curve:base-sepolia": "hardhat run scripts/deploy-bonding-curve.ts --network baseSepolia",
+    "deploy:bonding-curve:base": "hardhat run scripts/deploy-bonding-curve.ts --network base",
     "verify": "hardhat verify",
     "clean": "hardhat clean",
     "node": "hardhat node"

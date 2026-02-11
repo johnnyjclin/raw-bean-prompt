@@ -4,14 +4,18 @@ import { TrendingUp, Activity } from "lucide-react";
 
 interface PriceChartProps {
   tokenSymbol: string;
-  currentPrice?: string;
+  currentPrice?: string;   // buy price for 1 token
+  sellPrice?: string;      // sell price for 1 token
+  circulatingSupply?: string;
   priceHistory?: Array<{ time: string; price: number }>;
 }
 
-export function PriceChart({ 
-  tokenSymbol, 
-  currentPrice = "0.001",
-  priceHistory = [] 
+export function PriceChart({
+  tokenSymbol,
+  currentPrice = "0.000001",
+  sellPrice,
+  circulatingSupply = "0",
+  priceHistory = []
 }: PriceChartProps) {
   // Mock price history data (will be replaced with real data)
   const mockHistory = priceHistory.length > 0 ? priceHistory : [
@@ -81,12 +85,22 @@ export function PriceChart({
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-700">
         <div>
-          <p className="text-xs text-gray-400">24h Volume</p>
-          <p className="text-sm font-semibold mt-1">1.2 ETH</p>
+          <p className="text-xs text-gray-400">Buy Price</p>
+          <p className="text-sm font-semibold mt-1 text-green-400 font-mono">
+            {parseFloat(currentPrice).toFixed(8)} ETH
+          </p>
         </div>
         <div>
-          <p className="text-xs text-gray-400">Total Trades</p>
-          <p className="text-sm font-semibold mt-1">42</p>
+          <p className="text-xs text-gray-400">Sell Price</p>
+          <p className="text-sm font-semibold mt-1 text-red-400 font-mono">
+            {sellPrice && parseFloat(sellPrice) > 0
+              ? `${parseFloat(sellPrice).toFixed(8)} ETH`
+              : "—"}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-400">Circulating Supply</p>
+          <p className="text-sm font-semibold mt-1">{circulatingSupply}</p>
         </div>
       </div>
 
