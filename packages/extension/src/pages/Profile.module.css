@@ -1,0 +1,182 @@
+.page {
+  padding: 16px;
+  background: #f5f5f5;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.subtitle {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.assetsHint {
+  font-size: 11px;
+  color: #888;
+  margin: -8px 0 12px;
+}
+
+.balanceCard {
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.balanceValue {
+  font-size: 28px;
+  font-weight: 600;
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.chart {
+  height: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.timeRanges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.rangeBtn {
+  padding: 6px 10px;
+  font-size: 12px;
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.rangeBtn:hover {
+  color: #fff;
+}
+
+.rangeBtn.active {
+  color: #2196f3;
+  background: rgba(33, 150, 243, 0.2);
+}
+
+.assetsTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 12px;
+  text-transform: lowercase;
+}
+
+.assetTabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  background: #e8e8e8;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.assetTab {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.assetTab:hover {
+  color: #333;
+}
+
+.assetTab.active {
+  background: #fff;
+  color: #333;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.emptyState {
+  font-size: 14px;
+  color: #999;
+  text-align: center;
+  padding: 24px;
+}
+
+.assetList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.assetItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.assetIcon {
+  width: 40px;
+  height: 40px;
+  background: #d4c4b0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.assetInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.assetName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.assetAmount {
+  font-size: 12px;
+  color: #666;
+}
+
+.assetValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}

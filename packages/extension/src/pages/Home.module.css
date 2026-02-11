@@ -1,0 +1,300 @@
+.page {
+  padding: 8px 16px 16px;
+  background: #f5f5f5;
+  min-height: 100%;
+}
+
+.pageHint {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.headHint {
+  font-size: 10px;
+  color: #777;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.inventoryHint {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 4px 0 0;
+}
+
+.logo {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5a4a42;
+}
+
+.iconBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #d4c4b0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #5a4a42;
+}
+
+.botDisplay {
+  background: #d4c4b0;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 16px 16px 20px;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.robotWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.lottieWrapper {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lottieCanvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.headSlots {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.headSlot {
+  width: 52px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 2px dashed #888;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.headSlot.dragOver {
+  border-color: #8bc34a;
+  background: rgba(139, 195, 74, 0.3);
+}
+
+.headSlot[draggable="true"] {
+  cursor: grab;
+}
+
+.headSlot[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.slot.dragOver {
+  border-color: #8bc34a;
+  background: rgba(139, 195, 74, 0.3);
+  box-shadow: inset 0 0 0 2px #8bc34a;
+}
+
+.headSlotSkill {
+  font-size: 10px;
+  color: #333;
+}
+
+.headSlotEmpty {
+  font-size: 18px;
+  color: #999;
+}
+
+.executeBtn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: #8bc34a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.executeBtn:hover {
+  background: #7cb342;
+}
+
+.botDisplay.botDragOver {
+  background: rgba(139, 195, 74, 0.4);
+  border-color: #8bc34a;
+  box-shadow: inset 0 0 0 3px rgba(139, 195, 74, 0.5);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.botDisplay.botDragOff {
+  background: rgba(255, 167, 38, 0.35);
+  border-color: #ff9800;
+  box-shadow: inset 0 0 0 3px rgba(255, 152, 0, 0.4);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.botDisplay.absorbed {
+  animation: absorb 0.6s ease-out;
+}
+
+@keyframes absorb {
+  0% { box-shadow: 0 0 0 0 rgba(139, 195, 74, 0.6); }
+  50% { box-shadow: 0 0 20px 8px rgba(139, 195, 74, 0.4); }
+  100% { box-shadow: 0 0 0 0 rgba(139, 195, 74, 0); }
+}
+
+.robot {
+  width: 120px;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.robotHead {
+  width: 60px;
+  height: 50px;
+  background: #ffd54f;
+  border-radius: 50% 50% 40% 40%;
+  position: relative;
+  border: 2px solid #333;
+}
+
+.robotEyes {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+}
+
+.robotAntenna {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 12px;
+  background: #333;
+  border-radius: 2px;
+}
+
+.robotBody {
+  width: 80px;
+  height: 60px;
+  background: #e53935;
+  border-radius: 8px;
+  margin-top: -5px;
+  border: 2px solid #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.robotScreen {
+  width: 40px;
+  height: 24px;
+  background: #4fc3f7;
+  border-radius: 4px;
+}
+
+.robotControls {
+  width: 30px;
+  height: 8px;
+  background: #666;
+  border-radius: 4px;
+  margin-top: 6px;
+}
+
+.robotArms {
+  width: 90px;
+  height: 12px;
+  background: #5e35b1;
+  border-radius: 6px;
+  margin-top: -2px;
+  border: 2px solid #333;
+}
+
+.robotLegs {
+  width: 50px;
+  height: 20px;
+  background: #e53935;
+  border-radius: 0 0 8px 8px;
+  margin-top: 4px;
+  border: 2px solid #333;
+  border-top: none;
+}
+
+.skillSlots {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.slot {
+  width: 72px;
+  height: 72px;
+  background: #d4c4b0;
+  border: 1px solid #999;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  transition: background 0.2s;
+}
+
+.slot:active {
+  cursor: grabbing;
+}
+
+.slot:hover {
+  background: #c4b4a0;
+}
+
+.skillPlaceholder {
+  font-size: 11px;
+  color: #5a4a42;
+  text-align: center;
+}
+
+.emptySlot {
+  font-size: 24px;
+  color: #999;
+}

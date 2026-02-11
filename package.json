@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "pnpm --filter web dev",
     "build": "pnpm --filter web build",
+    "extension:dev": "pnpm --filter @easya/extension dev",
+    "extension:build": "pnpm --filter @easya/extension build",
+    "extension:preview": "pnpm --filter @easya/extension preview",
     "start": "pnpm --filter web start",
     "lint": "pnpm --filter web lint",
     "contracts:compile": "pnpm --filter @rawbean/contracts compile",

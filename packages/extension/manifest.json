@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "EasyA Robin Bot",
+  "version": "0.0.1",
+  "description": "AI Agent Ability Token Marketplace - Trading bot powered by tokenized skills",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "EasyA Robin Bot"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["<all_urls>", "https://lottie.host/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; worker-src 'self';"
+  }
+}
