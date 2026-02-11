@@ -1,0 +1,22 @@
+{
+  "name": "rawbean-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "start": "pnpm --filter web start",
+    "lint": "pnpm --filter web lint",
+    "contracts:compile": "pnpm --filter @rawbean/contracts compile",
+    "contracts:test": "pnpm --filter @rawbean/contracts test",
+    "contracts:deploy:local": "pnpm --filter @rawbean/contracts deploy:local",
+    "contracts:deploy:base-sepolia": "pnpm --filter @rawbean/contracts deploy:base-sepolia",
+    "contracts:deploy:base": "pnpm --filter @rawbean/contracts deploy:base",
+    "contracts:verify": "pnpm --filter @rawbean/contracts verify",
+    "contracts:clean": "pnpm --filter @rawbean/contracts clean",
+    "contracts:node": "pnpm --filter @rawbean/contracts node"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}
