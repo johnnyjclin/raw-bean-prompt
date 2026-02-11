@@ -6,15 +6,17 @@ import "./AbilityToken.sol";
 /**
  * @title AbilityTokenFactory
  * @dev Factory contract for creating tokenized AI prompts/abilities
- * @notice Allows anyone to create ERC20 tokens representing AI prompts
+ * @notice Allows anyone to create ERC20 tokens representing AI prompts.
+ *         Each token supports buy/sell so that holding tokens activates
+ *         or deactivates abilities for the buyer's AI agent.
  */
 contract AbilityTokenFactory {
     // Array of all created tokens
     address[] public allAbilityTokens;
-    
+
     // Mapping from creator to their tokens
     mapping(address => address[]) public creatorTokens;
-    
+
     // Mapping from token address to token info (for quick lookup)
     mapping(address => TokenInfo) public tokenInfoMap;
 
@@ -25,6 +27,7 @@ contract AbilityTokenFactory {
         string description;
         address creator;
         uint256 timestamp;
+        uint256 price;
         bool exists;
     }
 
@@ -37,6 +40,7 @@ contract AbilityTokenFactory {
         string name,
         string symbol,
         string prompt,
+        uint256 price,
         uint256 timestamp
     );
 
@@ -48,6 +52,7 @@ contract AbilityTokenFactory {
      * @param description Detailed description
      * @param category Category of the prompt
      * @param initialSupply Initial token supply (will be multiplied by 10^18)
+     * @param price ETH price per whole token (in wei)
      * @return address of the newly created token
      */
     function createAbilityToken(
@@ -56,12 +61,14 @@ contract AbilityTokenFactory {
         string memory prompt,
         string memory description,
         string memory category,
-        uint256 initialSupply
+        uint256 initialSupply,
+        uint256 price
     ) external returns (address) {
         require(bytes(name).length > 0, "Name cannot be empty");
         require(bytes(symbol).length > 0, "Symbol cannot be empty");
         require(bytes(prompt).length > 0, "Prompt cannot be empty");
         require(initialSupply > 0, "Initial supply must be greater than 0");
+        require(price > 0, "Price must be greater than 0");
 
         // Create new token contract
         AbilityToken newToken = new AbilityToken(
@@ -71,15 +78,16 @@ contract AbilityTokenFactory {
             description,
             category,
             initialSupply,
-            msg.sender
+            msg.sender,
+            price
         );
 
         address tokenAddress = address(newToken);
-        
+
         // Store token info
         allAbilityTokens.push(tokenAddress);
         creatorTokens[msg.sender].push(tokenAddress);
-        
+
         tokenInfoMap[tokenAddress] = TokenInfo({
             name: name,
             symbol: symbol,
@@ -87,6 +95,7 @@ contract AbilityTokenFactory {
             description: description,
             creator: msg.sender,
             timestamp: block.timestamp,
+            price: price,
             exists: true
         });
 
@@ -96,6 +105,7 @@ contract AbilityTokenFactory {
             name,
             symbol,
             prompt,
+            price,
             block.timestamp
         );
 
@@ -136,6 +146,7 @@ contract AbilityTokenFactory {
      * @return description Token description
      * @return creator Creator address
      * @return totalSupply Total supply of the token
+     * @return price ETH price per whole token (in wei)
      */
     function getTokenInfo(address tokenAddress) external view returns (
         string memory name,
@@ -143,19 +154,21 @@ contract AbilityTokenFactory {
         string memory prompt,
         string memory description,
         address creator,
-        uint256 totalSupply
+        uint256 totalSupply,
+        uint256 price
     ) {
         require(tokenInfoMap[tokenAddress].exists, "Token does not exist");
-        
-        AbilityToken token = AbilityToken(tokenAddress);
-        
+
+        AbilityToken token = AbilityToken(payable(tokenAddress));
+
         return (
             tokenInfoMap[tokenAddress].name,
             tokenInfoMap[tokenAddress].symbol,
             tokenInfoMap[tokenAddress].prompt,
             tokenInfoMap[tokenAddress].description,
             tokenInfoMap[tokenAddress].creator,
-            token.totalSupply()
+            token.totalSupply(),
+            tokenInfoMap[tokenAddress].price
         );
     }
 }
