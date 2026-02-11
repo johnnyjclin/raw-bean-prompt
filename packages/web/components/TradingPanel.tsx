@@ -38,6 +38,12 @@ export function TradingPanel({
   // Fetch token balance when wallet connects or token changes
   useEffect(() => {
     async function fetchBalance() {
+      // Skip on server side
+      if (typeof window === "undefined") {
+        setLoadingBalance(false);
+        return;
+      }
+      
       if (!address || !isConnected) {
         setTokenBalance(BigInt(0));
         return;

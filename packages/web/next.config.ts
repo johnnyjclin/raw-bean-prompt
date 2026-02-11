@@ -12,6 +12,12 @@ const nextConfig: NextConfig = {
     };
     return config;
   },
+  // Ensure server components work properly
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "2mb",
+    },
+  },
 };
 
 export default nextConfig;

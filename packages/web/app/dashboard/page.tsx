@@ -26,6 +26,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function fetchOwnedTokens() {
+      // Skip on server side
+      if (typeof window === "undefined") {
+        return;
+      }
+      
       if (!address) {
         setLoading(false);
         return;

@@ -40,6 +40,11 @@ export default function Home() {
   // Fetch all tokens using ethers.js
   useEffect(() => {
     async function fetchTokensInfo() {
+      // Skip on server side
+      if (typeof window === "undefined") {
+        return;
+      }
+      
       try {
         setLoading(true);
         setError(null);

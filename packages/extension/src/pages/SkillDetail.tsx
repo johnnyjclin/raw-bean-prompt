@@ -1,78 +1,107 @@
 import { useParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { useApp } from '../contexts/AppContext'
 import SettingsDropdown from '../components/SettingsDropdown'
+import { getTokenInfo, getTokenBalance } from '../lib/contract-helpers'
 import styles from './SkillDetail.module.css'
 
-const MOCK_SKILLS: Record<string, { name: string; rarity: string; price: number; prompt: string }> = {
-  '1': {
-    name: 'Momentum Detector',
-    rarity: 'rare',
-    price: 0.5,
-    prompt: `When the trading bot detects a momentum spike (volume + price movement) 
-on Robin pump.fun, it will:
-1. Analyze the token's recent 5m/15m chart
-2. Check if volume exceeds 2x average
-3. If conditions met: buy with 5% of available balance
-4. Set trailing stop at -3%`,
-  },
-  '2': {
-    name: 'Volume Spike',
-    rarity: 'legendary',
-    price: 1.2,
-    prompt: `Detects unusual volume spikes on Robin tokens.`,
-  },
-  '3': {
-    name: 'Trend Follower',
-    rarity: 'common',
-    price: 0.1,
-    prompt: `Follows established trends with moving averages.`,
-  },
-  '4': {
-    name: 'Smart Entry',
-    rarity: 'rare',
-    price: 0.8,
-    prompt: `Identifies optimal entry points using RSI and support levels.`,
-  },
-  '5': {
-    name: 'Stop Loss Master',
-    rarity: 'legendary',
-    price: 1.5,
-    prompt: `Dynamic stop-loss adjustment based on volatility and trend.`,
-  },
-  '6': {
-    name: 'Whale Tracker',
-    rarity: 'rare',
-    price: 0.6,
-    prompt: `Monitors large wallet movements for early signal detection.`,
-  },
-  '7': {
-    name: 'FOMO Guard',
-    rarity: 'common',
-    price: 0.15,
-    prompt: `Prevents impulsive buys during pump phases.`,
-  },
-  '8': {
-    name: 'Pattern Scanner',
-    rarity: 'legendary',
-    price: 1.8,
-    prompt: `Recognizes chart patterns for breakout trades.`,
-  },
+interface SkillData {
+  name: string
+  rarity: string
+  price: number
+  prompt: string
+  description: string
+  totalSupply: string
+  balance: string
 }
 
-interface SkillDetailProps {
-  skillId?: string
-}
-
-export default function SkillDetail({ skillId: skillIdProp }: SkillDetailProps = {}) {
+export default function SkillDetail({ skillId: skillIdProp }: { skillId?: string } = {}) {
   const { skillId: skillIdParam } = useParams()
   const skillId = skillIdProp ?? skillIdParam
   const navigate = useNavigate()
   const { assets, addAsset } = useApp()
-  const skillData = skillId ? MOCK_SKILLS[skillId] : null
-  const owned = skillId ? assets.some((a) => a.id === skillId) : false
+  
+  const [skillData, setSkillData] = useState<SkillData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Hardcoded address for demonstration (same as in Shop.tsx)
+  const HARDCODED_DEVICE_ADDRESS = "0x1cF1fb97E6A4AfaA4167FA19d52AD19D6689C677"
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadSkill() {
+      if (!skillId) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        setLoading(true)
+        setError(null)
+        
+        // Fetch token info
+        const info = await getTokenInfo(skillId)
+        
+        // Determine rarity
+        let rarity = 'common'
+        const supply = BigInt(info.totalSupply)
+        if (supply < 1000000n) rarity = 'legendary'
+        else if (supply < 10000000n) rarity = 'rare'
+
+        // Fetch balance
+        let balance = '0'
+        try {
+          // Use hardcoded address or wallet
+          const userAddress = HARDCODED_DEVICE_ADDRESS
+          /*
+          if (typeof window !== 'undefined' && window.ethereum) {
+             const accounts = await window.ethereum.request({ method: 'eth_accounts' }) as string[]
+             if (accounts && accounts.length > 0) userAddress = accounts[0]
+          }
+          */
+          if (userAddress) {
+             const bal = await getTokenBalance(skillId, userAddress)
+             balance = bal.toString()
+          }
+        } catch (e) {
+          console.warn('Failed to load balance', e)
+        }
+
+        if (isMounted) {
+          setSkillData({
+            name: info.name,
+            rarity,
+            price: 0.5, // Mock price
+            prompt: info.prompt,
+            description: info.description,
+            totalSupply: info.totalSupply,
+            balance
+          })
+          setLoading(false)
+        }
+      } catch (err: any) {
+        console.error('Failed to load skill details:', err)
+        if (isMounted) {
+          setError(err.message || 'Failed to load skill')
+          setLoading(false)
+        }
+      }
+    }
+
+    loadSkill()
+    return () => { isMounted = false }
+  }, [skillId])
+
+
+  const owned = skillData ? BigInt(skillData.balance) > 0n : false
 
   const handleBuy = () => {
     if (skillId && skillData) {
+      // In a real app, this would trigger a blockchain transaction
+      // For now, we simulate adding to "local" assets context if that's still being used
+      // But really we rely on the balance check above.
       addAsset({ id: skillId, name: skillData.name, rarity: skillData.rarity })
       navigate('/profile')
     }
@@ -82,13 +111,23 @@ export default function SkillDetail({ skillId: skillIdProp }: SkillDetailProps =
     navigate('/')
   }
 
-  if (!skillData) {
+  if (loading) {
+     return (
+       <div className={styles.page}>
+         <div className={styles.loading}>Loading skill details...</div>
+       </div>
+     )
+  }
+
+  if (error || !skillData) {
     return (
       <div className={styles.page}>
         <button className={styles.backBtn} onClick={() => navigate('/shop')}>
           ← Back
         </button>
-        <p>Skill not found</p>
+        <div className={styles.error}>
+          {error || 'Skill not found'}
+        </div>
       </div>
     )
   }
@@ -112,7 +151,7 @@ export default function SkillDetail({ skillId: skillIdProp }: SkillDetailProps =
 
       <div className={styles.promptSection}>
         <h3>Agent Prompt</h3>
-        <p className={styles.promptHint}>This skill makes the bot act by the following logic</p>
+        <p className={styles.promptHint}>{skillData.description}</p>
         <pre className={styles.prompt}>{skillData.prompt}</pre>
       </div>
 

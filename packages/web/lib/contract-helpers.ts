@@ -11,6 +11,10 @@ export function getProvider() {
 
 // Get all token addresses from bonding curve factory
 export async function getAllTokenAddresses(): Promise<string[]> {
+  if (typeof window === "undefined") {
+    return [];
+  }
+  
   const provider = getProvider();
   const factoryContract = new ethers.Contract(
     TOKEN_FACTORY_BONDING_CURVE_ADDRESS,
@@ -23,6 +27,10 @@ export async function getAllTokenAddresses(): Promise<string[]> {
 
 // Get token info from bonding curve factory
 export async function getTokenInfo(tokenAddress: string) {
+  if (typeof window === "undefined") {
+    throw new Error("Cannot get token info on server side");
+  }
+  
   const provider = getProvider();
   const factoryContract = new ethers.Contract(
     TOKEN_FACTORY_BONDING_CURVE_ADDRESS,
@@ -52,6 +60,10 @@ export async function getTokenBalance(
   tokenAddress: string,
   userAddress: string
 ): Promise<bigint> {
+  if (typeof window === "undefined") {
+    return 0n;
+  }
+  
   const provider = getProvider();
   const tokenContract = new ethers.Contract(
     tokenAddress,

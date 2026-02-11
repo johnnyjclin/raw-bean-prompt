@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import { getAllTokenAddresses, getTokenInfo, getTokenBalance, delay } from '../lib/contract-helpers'
 
 export interface Skill {
   id: string
@@ -10,6 +11,7 @@ export interface Skill {
 interface AppState {
   robotHeadSlots: (Skill | null)[]
   assets: Skill[]
+  isLoading: boolean
   addAsset: (skill: Skill) => void
   removeAsset: (skillId: string) => void
   equipToHead: (skill: Skill, headSlot: number) => void
@@ -19,16 +21,77 @@ interface AppState {
 
 const AppContext = createContext<AppState | null>(null)
 
+// TODO: Replace with your actual wallet address or logic to get connected wallet
+const HARDCODED_DEVICE_ADDRESS = "0x1cF1fb97E6A4AfaA4167FA19d52AD19D6689C677"
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [isLoading, setIsLoading] = useState(false)
   const [robotHeadSlots, setRobotHeadSlots] = useState<(Skill | null)[]>([
     null,
     null,
     null,
   ])
-  const [assets, setAssets] = useState<Skill[]>([
-    { id: '1', name: 'Momentum Detector', rarity: 'rare' },
-    { id: '2', name: 'Volume Spike', rarity: 'legendary' },
-  ])
+  const [assets, setAssets] = useState<Skill[]>([])
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadAssets = async () => {
+      setIsLoading(true)
+      try {
+        const addresses = await getAllTokenAddresses()
+        if (!isMounted) return
+
+        const ownedAssets: Skill[] = []
+        
+        for (const address of addresses) {
+          if (!isMounted) break
+          
+          try {
+            const balance = await getTokenBalance(address, HARDCODED_DEVICE_ADDRESS)
+            
+            if (balance > 0n) {
+              const info = await getTokenInfo(address)
+              
+              let rarity = 'common'
+              const supply = BigInt(info.totalSupply)
+              if (supply < 1000000n) {
+                rarity = 'legendary'
+              } else if (supply < 10000000n) {
+                rarity = 'rare'
+              }
+              
+              ownedAssets.push({
+                id: address,
+                name: info.name,
+                rarity
+              })
+            }
+            // Small delay to prevent rate limiting
+            await delay(50)
+          } catch (err) {
+            console.error(`Failed to load asset ${address}:`, err)
+          }
+        }
+
+        if (isMounted) {
+          setAssets(ownedAssets)
+        }
+      } catch (err) {
+        console.error('Failed to load assets:', err)
+      } finally {
+        if (isMounted) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadAssets()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   const addAsset = useCallback((skill: Skill) => {
     setAssets((prev) => [...prev, skill])
@@ -78,6 +141,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       value={{
         robotHeadSlots,
         assets,
+        isLoading,
         addAsset,
         removeAsset,
         equipToHead,
