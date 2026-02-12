@@ -6,6 +6,9 @@ import { Header } from "@/components/Header";
 export const metadata: Metadata = {
   title: "Raw Bean Prompt - Launch Your Token",
   description: "Create and trade tokens instantly on the blockchain",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({

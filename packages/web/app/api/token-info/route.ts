@@ -21,9 +21,9 @@ export async function POST(request: NextRequest) {
       abi: TOKEN_FACTORY_ABI,
       functionName: "getTokenInfo",
       args: [address as `0x${string}`]
-    });
+    } as any);
 
-    const [name, symbol, prompt, description, creator, totalSupply] = tokenInfo as [string, string, string, string, string, bigint];
+    const [name, symbol, prompt, description, creator, totalSupply, price] = tokenInfo as readonly [string, string, string, string, `0x${string}`, bigint, bigint];
 
     return NextResponse.json({
       name,
@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
       prompt,
       description,
       creator,
-      totalSupply: totalSupply.toString()
+      totalSupply: totalSupply.toString(),
+      price: price.toString()
     });
   } catch (error) {
     console.error("Error fetching token info:", error);

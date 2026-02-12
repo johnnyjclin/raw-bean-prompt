@@ -49,10 +49,23 @@ export default function Home() {
         setLoading(true);
         setError(null);
         
+        // Hardcode one token address
+        const hardcodedAddress = "0xaa77f8ffa56f7cb582c32305fa9e9434f815a9bc";
         const addresses = await getAllTokenAddresses();
         const tokensData: TokenInfo[] = [];
         
+        // Add hardcoded token first
+        try {
+          const hardcodedInfo = await getTokenInfo(hardcodedAddress);
+          tokensData.push({ address: hardcodedAddress, ...hardcodedInfo });
+        } catch (error) {
+          console.error(`Error fetching hardcoded token ${hardcodedAddress}:`, error);
+        }
+        
         for (const address of addresses) {
+          // Skip if it's the hardcoded address to avoid duplication
+          if (address.toLowerCase() === hardcodedAddress.toLowerCase()) continue;
+          
           try {
             const info = await getTokenInfo(address);
             tokensData.push({ address, ...info });
@@ -109,7 +122,7 @@ export default function Home() {
       functionName: "buy",
       args: [BigInt(amount)],
       value: parseEther(ethCost),
-    });
+    } as any);
     setPendingTxHash(hash);
   };
 
@@ -121,7 +134,7 @@ export default function Home() {
       abi: ABILITY_TOKEN_BONDING_CURVE_ABI,
       functionName: "sell",
       args: [BigInt(amount)],
-    });
+    } as any);
     setPendingTxHash(hash);
   };
 

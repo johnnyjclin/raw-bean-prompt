@@ -29,7 +29,7 @@ export function TradingPanel({
   const [activeTab, setActiveTab] = useState<"buy" | "sell">("buy");
   // Buy mode: user inputs ETH → calculates tokens
   // Sell mode: user inputs tokens → calculates ETH refund
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState("0.000001");
   const [outputValue, setOutputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [tokenBalance, setTokenBalance] = useState<bigint>(BigInt(0));
@@ -62,10 +62,22 @@ export function TradingPanel({
     fetchBalance();
   }, [address, tokenAddress, isConnected]);
 
+  // Calculate initial output value when price becomes available
+  useEffect(() => {
+    if (activeTab === "buy" && inputValue === "0.000001" && currentPrice) {
+      const ethVal = parseFloat(inputValue);
+      const pricePerToken = parseFloat(currentPrice);
+      if (pricePerToken > 0) {
+        const tokens = Math.floor(ethVal / pricePerToken);
+        setOutputValue(tokens > 0 ? tokens.toString() : "0");
+      }
+    }
+  }, [currentPrice, activeTab, inputValue]);
+
   // Reset inputs when switching tab
   const switchTab = (tab: "buy" | "sell") => {
     setActiveTab(tab);
-    setInputValue("");
+    setInputValue(tab === "buy" ? "0.000001" : "");
     setOutputValue("");
   };
 

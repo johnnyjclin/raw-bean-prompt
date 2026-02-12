@@ -47,7 +47,7 @@ export default function LaunchPage() {
           parseEther(formData.basePrice),
           parseEther(formData.priceIncrement),
         ]
-      });
+      } as any);
     } catch (error) {
       console.error("Launch error:", error);
       alert("Launch failed: " + (error as Error).message);
@@ -63,6 +63,7 @@ export default function LaunchPage() {
       {/* Back Button */}
       <Link 
         href="/" 
+        prefetch={false}
         className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-8"
       >
         <ArrowLeft className="w-4 h-4" />

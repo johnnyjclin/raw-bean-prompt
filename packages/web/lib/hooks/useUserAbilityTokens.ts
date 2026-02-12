@@ -1,3 +1,4 @@
+import React from "react";
 import { useAccount, useReadContract, useReadContracts } from "wagmi";
 import { formatEther } from "viem";
 import { 
@@ -89,8 +90,13 @@ export function useUserAbilityTokens() {
     }
   }
 
+  // Memoize to prevent unnecessary rerenders when data hasn't changed
+  const memoizedTokens = React.useMemo(() => userTokens, [
+    JSON.stringify(userTokens.map(t => ({ address: t.address, balance: t.balance.toString() })))
+  ]);
+
   return {
-    tokens: userTokens,
+    tokens: memoizedTokens,
     isLoading: isLoadingTokens || isLoadingData,
     isConnected,
   };

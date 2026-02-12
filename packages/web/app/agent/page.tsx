@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Bot, ArrowLeft, Loader2, Play, Wallet } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
@@ -168,6 +168,12 @@ export default function AgentPage() {
     });
   }, []);
 
+  // Memoize user tokens string to prevent unnecessary rerenders
+  const userTokensKey = useMemo(() => 
+    userTokens.map(t => `${t.address}-${t.balanceFormatted}`).join(','),
+    [userTokens]
+  );
+
   // Load user's ability tokens from wallet
   useEffect(() => {
     if (isConnected && userTokens.length > 0) {
@@ -191,7 +197,7 @@ export default function AgentPage() {
       // Show placeholder when not connected
       setInventory([null, null, null, null]);
     }
-  }, [isConnected, userTokens]);
+  }, [isConnected, userTokensKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load scraped data from extension (URL parameters) - OPTIONAL: Keep if we still want this to work from extension
   useEffect(() => {

@@ -51,6 +51,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-center gap-4">
             <Link
               href="/launch"
+              prefetch={false}
               className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-lg font-semibold transition-colors"
             >
               <Rocket className="w-5 h-5" />
@@ -58,6 +59,7 @@ export default function DashboardPage() {
             </Link>
             <Link
               href="/"
+              prefetch={false}
               className="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
             >
               Browse Marketplace
@@ -206,12 +208,14 @@ export default function DashboardPage() {
               <div className="flex gap-3">
                 <Link
                   href={`/?token=${selectedToken.address}`}
+                  prefetch={false}
                   className="flex-1 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-lg font-semibold text-center transition-colors"
                 >
                   Trade in Marketplace
                 </Link>
                 <Link
                   href="/agent"
+                  prefetch={false}
                   className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold text-center transition-colors"
                 >
                   Use in Agent
