@@ -235,7 +235,44 @@ pnpm run build
 
 ---
 
-## 🔗 Links
+## Growth Roadmap
+
+<div align="center">
+  <img src="assets/growth_roadmap.png" width="800" alt="Growth Roadmap - Secure, private, and scalable infrastructure for the AI-driven economy">
+</div>
+
+### Phase 1: IPFS - Decentralized Intelligence Storage
+**Scaling agent memory and RAG datasets through immutable off-chain storage.**
+
+Implement IPFS integration to store:
+- AI prompt libraries and training data
+- Agent execution history and decision logs
+- Large-scale RAG (Retrieval-Augmented Generation) datasets
+- Immutable proof of agent capabilities and performance metrics
+
+### Phase 2: TEE - Confidential Strategy Execution
+**Securing proprietary logic and private decision-making within hardware enclaves.**
+
+Deploy Trusted Execution Environments (TEE) for:
+- Private AI model inference without exposing prompts
+- Confidential trading strategies and execution logic
+- Secure multi-party agent collaboration
+- Zero-knowledge proof of agent performance
+
+### Phase 3: Scale - Crypto & RWA Tokens
+**Expanding agent utility to automated management of cryptos and real-world assets.**
+
+Enable agents to manage:
+- Multi-chain cryptocurrency portfolios
+- DeFi protocol interactions (lending, staking, yield farming)
+- Real-World Asset (RWA) tokens (real estate, commodities, securities)
+- Automated rebalancing and risk management strategies
+
+**Timeline:** Ongoing development in 2026 and beyond
+
+---
+
+## �🔗 Links
 
 **Smart Contracts:**
 - Factory (Bonding Curve): `0x713b7F49F5700e24544710fe0dF868793ABFD8D5`
