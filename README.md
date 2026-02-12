@@ -6,7 +6,19 @@ The system combines smart contracts, a web marketplace, and a Chrome extension t
 
 ---
 
-## 🏗️ System Architecture
+## � Demo
+
+<div align="center">
+  
+[![Demo Video](https://img.youtube.com/vi/Nh9iCGllDtc/maxresdefault.jpg)](https://www.youtube.com/watch?v=Nh9iCGllDtc)
+
+*Watch how users create, trade, and equip AI abilities in action*
+
+</div>
+
+---
+
+## �🏗️ System Architecture
 
 ### Smart Contracts (`packages/contracts/`)
 
