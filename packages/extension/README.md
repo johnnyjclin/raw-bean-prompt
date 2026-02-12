@@ -2,7 +2,7 @@
 
 AI Agent Ability Token Marketplace - Trading bot powered by tokenized skills on Robin pump.fun.
 
-## 專案結構
+## Project Structure
 
 ```
 ├── src/
@@ -14,35 +14,35 @@ AI Agent Ability Token Marketplace - Trading bot powered by tokenized skills on 
 └── vite.config.ts      # Vite + CRXJS
 ```
 
-## 開發
+## Development
 
 ```bash
-# 安裝依賴
+# Install dependencies
 npm install
 
-# 開發模式（watch 模式建置）
+# Development mode (watch mode build)
 npm run dev
 
-# 生產建置
+# Production build
 npm run build
 ```
 
-## 載入到 Chrome
+## Load into Chrome
 
-1. 執行 `npm run build`
-2. 打開 Chrome，前往 `chrome://extensions/`
-3. 開啟「開發人員模式」
-4. 點「載入未封裝項目」
-5. 選擇專案底下的 `dist` 資料夾
+1. Run `npm run build`
+2. Open Chrome and navigate to `chrome://extensions/`
+3. Enable "Developer mode"
+4. Click "Load unpacked"
+5. Select the `dist` folder from the project
 
-## 頁面說明
+## Pages
 
-- **Home** - 機器人展示、4 個 skill slot
-- **Shop** - Agent Skill Market Place 列表
-- **Shop/:id** - Skill 詳情（含 Agent Prompt）
-- **Agent** - Zero UI，glowing text 顯示 bot 狀態，需確認時出現按鈕
-- **Profile** - 總資產、餘額圖表、持有代幣列表
+- **Home** - Robot display with 4 skill slots
+- **Shop** - Agent Skill Marketplace list
+- **Shop/:id** - Skill details (includes Agent Prompt)
+- **Agent** - Zero UI with glowing text showing bot status, confirmation buttons when needed
+- **Profile** - Total assets, balance chart, token holdings list
 
 ## Tab Bar
 
-底部固定：Home | Shop | Agent | Profile
+Fixed bottom navigation: Home | Shop | Agent | Profile

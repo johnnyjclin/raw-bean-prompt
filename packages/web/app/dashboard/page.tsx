@@ -1,82 +1,17 @@
 "use client";
 
 import { useAccount } from "wagmi";
-import { Wallet, Rocket, Copy, X } from "lucide-react";
+import { Wallet, Rocket, Copy, X, Crown } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { getAllTokenAddresses, getTokenInfo, getTokenBalance, delay } from "@/lib/contract-helpers";
-
-interface TokenInfo {
-  address: string;
-  name: string;
-  symbol: string;
-  prompt: string;
-  description: string;
-  creator: string;
-  balance: string;
-}
+import { useState } from "react";
+import { useUserAbilityTokens } from "@/lib/hooks/useUserAbilityTokens";
+import { formatEther } from "viem";
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount();
-  const [ownedTokens, setOwnedTokens] = useState<TokenInfo[]>([]);
-  const [selectedToken, setSelectedToken] = useState<TokenInfo | null>(null);
+  const { tokens, isLoading, isConnected: hasWallet } = useUserAbilityTokens();
+  const [selectedToken, setSelectedToken] = useState<typeof tokens[0] | null>(null);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchOwnedTokens() {
-      // Skip on server side
-      if (typeof window === "undefined") {
-        return;
-      }
-      
-      if (!address) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const addresses = await getAllTokenAddresses();
-        const owned: TokenInfo[] = [];
-
-        for (const tokenAddr of addresses) {
-          try {
-            // Get token info
-            const info = await getTokenInfo(tokenAddr);
-            
-            // Get balance
-            const balance = await getTokenBalance(tokenAddr, address);
-            
-            if (balance > 0n) {
-              owned.push({
-                address: tokenAddr,
-                balance: balance.toString(),
-                ...info,
-              });
-            }
-
-            // Small delay between requests
-            await delay(100);
-          } catch (error) {
-            console.error(`Error fetching token ${tokenAddr}:`, error);
-          }
-        }
-
-        setOwnedTokens(owned);
-      } catch (error: any) {
-        console.error("Error fetching owned tokens:", error);
-        setError(error.message || "Failed to load tokens");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchOwnedTokens();
-  }, [address]);
 
   const copyAddress = (addr: string) => {
     navigator.clipboard.writeText(addr);
@@ -100,80 +35,115 @@ export default function DashboardPage() {
     <main className="max-w-7xl mx-auto px-6 py-12">
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">My Tokens</h1>
-        <p className="text-gray-400">Tokens you own from the marketplace</p>
+        <p className="text-gray-400">Your owned and created ability tokens</p>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
           <p className="text-gray-400 mt-4">Loading your tokens...</p>
         </div>
-      ) : error ? (
-        <div className="bg-red-900/20 border border-red-500 rounded-xl p-12 text-center">
-          <h3 className="text-xl font-bold mb-2 text-red-500">Error</h3>
-          <p className="text-gray-400">{error}</p>
-          <p className="text-sm text-gray-500 mt-2">Make sure your wallet is connected</p>
-        </div>
-      ) : ownedTokens.length === 0 ? (
+      ) : tokens.length === 0 ? (
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center">
           <Rocket className="w-16 h-16 mx-auto mb-4 text-gray-600" />
           <h3 className="text-xl font-bold mb-2">No tokens yet</h3>
           <p className="text-gray-400 mb-6">Start by launching or acquiring tokens from the marketplace</p>
-          <Link
-            href="/launch"
-            className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-lg font-semibold transition-colors"
-          >
-            <Rocket className="w-5 h-5" />
-            Launch Your First Token
-          </Link>
+          <div className="flex items-center justify-center gap-4">
+            <Link
+              href="/launch"
+              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-lg font-semibold transition-colors"
+            >
+              <Rocket className="w-5 h-5" />
+              Launch Token
+            </Link>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+            >
+              Browse Marketplace
+            </Link>
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {ownedTokens.map((token) => (
-            <div
-              key={token.address}
-              onClick={() => setSelectedToken(token)}
-              className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-green-500 transition-colors cursor-pointer"
-            >
-              <div className="mb-4">
-                <h3 className="text-xl font-bold mb-1">{token.name}</h3>
-                <p className="text-green-500 font-mono text-sm">${token.symbol}</p>
-              </div>
-
-              <div className="flex items-center gap-2 text-xs text-gray-400">
-                <span>Creator:</span>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    copyAddress(token.creator);
-                  }}
-                  className="flex items-center gap-1 hover:text-green-500 transition-colors"
-                >
-                  <span className="font-mono">{token.creator.slice(0, 6)}...{token.creator.slice(-4)}</span>
-                  <Copy className="w-3 h-3" />
-                </button>
-                {copiedAddress === token.creator && (
-                  <span className="text-green-500 text-xs">✓</span>
-                )}
-              </div>
+        <>
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+              <p className="text-gray-400 text-sm mb-1">Total Tokens</p>
+              <p className="text-3xl font-bold">{tokens.length}</p>
             </div>
-          ))}
-        </div>
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+              <p className="text-gray-400 text-sm mb-1">Owned Tokens</p>
+              <p className="text-3xl font-bold text-green-500">
+                {tokens.filter(t => t.category === "owned").length}
+              </p>
+            </div>
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+              <p className="text-gray-400 text-sm mb-1">Purchased Tokens</p>
+              <p className="text-3xl font-bold text-blue-500">
+                {tokens.filter(t => t.category === "purchased").length}
+              </p>
+            </div>
+          </div>
+
+          {/* Token Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tokens.map((token) => (
+              <div
+                key={token.address}
+                onClick={() => setSelectedToken(token)}
+                className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-green-500 transition-colors cursor-pointer relative"
+              >
+                {token.category === "owned" && (
+                  <div className="absolute top-4 right-4 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+                    <Crown className="w-3 h-3" />
+                    OWNER
+                  </div>
+                )}
+
+                <div className="mb-4">
+                  <h3 className="text-xl font-bold mb-1">{token.name}</h3>
+                  <p className="text-green-500 font-mono text-sm">${token.symbol}</p>
+                </div>
+
+                <div className="mb-4 bg-gray-800 rounded-lg px-4 py-3">
+                  <span className="text-xs text-gray-400 block mb-1">Your Balance</span>
+                  <span className="text-green-400 font-mono font-semibold text-sm">
+                    {parseFloat(token.balanceFormatted).toFixed(4)} {token.symbol}
+                  </span>
+                </div>
+
+                <div className="text-xs text-gray-400">
+                  <p className="line-clamp-2">{token.description || token.prompt}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
+      {/* Modal */}
       {selectedToken && (
         <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center p-6 z-50"
           onClick={() => setSelectedToken(null)}
         >
           <div
-            className="bg-gray-900 border border-gray-800 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            className="bg-gray-900 border border-gray-800 rounded-xl max-w-3xl w-full max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-gray-900 border-b border-gray-800 p-6 flex items-start justify-between">
-              <div>
-                <h2 className="text-2xl font-bold mb-1">{selectedToken.name}</h2>
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-gray-900 border-b border-gray-800 p-6 flex items-start justify-between z-10">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h2 className="text-2xl font-bold">{selectedToken.name}</h2>
+                  {selectedToken.category === "owned" && (
+                    <span className="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+                      <Crown className="w-3 h-3" />
+                      OWNER
+                    </span>
+                  )}
+                </div>
                 <p className="text-green-500 font-mono">${selectedToken.symbol}</p>
               </div>
               <button
@@ -185,48 +155,67 @@ export default function DashboardPage() {
               </button>
             </div>
 
+            {/* Modal Content */}
             <div className="p-6 space-y-6">
+              {/* Balance Info */}
+              <div className="bg-gradient-to-br from-green-900/30 to-blue-900/30 border border-green-500/30 rounded-lg p-6">
+                <p className="text-sm text-gray-400 mb-2">Your Balance</p>
+                <p className="text-3xl font-bold text-green-400">
+                  {parseFloat(selectedToken.balanceFormatted).toFixed(4)} {selectedToken.symbol}
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  ({formatEther(selectedToken.balance)} ETH equivalent)
+                </p>
+              </div>
+
+              {/* Prompt Section */}
               <div>
-                <h3 className="text-lg font-semibold mb-3 text-green-500">Prompt Content</h3>
+                <h3 className="text-lg font-semibold mb-3 text-green-500">💡 Prompt Content</h3>
                 <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
                   <p className="text-gray-300 whitespace-pre-wrap">{selectedToken.prompt}</p>
                 </div>
               </div>
 
+              {/* Description Section */}
               {selectedToken.description && (
                 <div>
-                  <h3 className="text-lg font-semibold mb-3 text-blue-500">Description</h3>
+                  <h3 className="text-lg font-semibold mb-3 text-blue-500">📝 Description</h3>
                   <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
                     <p className="text-gray-300 whitespace-pre-wrap">{selectedToken.description}</p>
                   </div>
                 </div>
               )}
 
+              {/* Token Address */}
               <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-                <p className="text-sm text-gray-400 mb-2">Token Address</p>
+                <p className="text-sm text-gray-400 mb-2">Token Contract Address</p>
                 <button
                   type="button"
                   onClick={() => copyAddress(selectedToken.address)}
-                  className="flex items-center gap-2 hover:text-green-500 transition-colors"
+                  className="flex items-center gap-2 hover:text-green-500 transition-colors group w-full"
                 >
-                  <span className="text-sm font-mono">{selectedToken.address}</span>
-                  <Copy className="w-4 h-4" />
+                  <span className="text-sm font-mono break-all flex-1 text-left">{selectedToken.address}</span>
+                  <Copy className="w-4 h-4 flex-shrink-0 group-hover:text-green-500" />
                 </button>
+                {copiedAddress === selectedToken.address && (
+                  <p className="text-green-500 text-xs mt-2">✓ Address copied to clipboard</p>
+                )}
               </div>
 
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-                <p className="text-sm text-gray-400 mb-2">Creator Address</p>
-                <button
-                  type="button"
-                  onClick={() => copyAddress(selectedToken.creator)}
-                  className="flex items-center gap-2 hover:text-green-500 transition-colors"
+              {/* Actions */}
+              <div className="flex gap-3">
+                <Link
+                  href={`/?token=${selectedToken.address}`}
+                  className="flex-1 bg-green-500 hover:bg-green-600 text-black px-6 py-3 rounded-lg font-semibold text-center transition-colors"
                 >
-                  <span className="font-mono text-sm">{selectedToken.creator}</span>
-                  <Copy className="w-4 h-4" />
-                </button>
-                {copiedAddress === selectedToken.creator && (
-                  <p className="text-green-500 text-xs mt-2">✓ Copied</p>
-                )}
+                  Trade in Marketplace
+                </Link>
+                <Link
+                  href="/agent"
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold text-center transition-colors"
+                >
+                  Use in Agent
+                </Link>
               </div>
             </div>
           </div>

@@ -13,7 +13,9 @@ export function Header() {
           <span className="text-xl font-bold">Raw Bean Prompt</span>
         </Link>
         <nav className="flex items-center gap-6">
+          <Link href="/" className="hover:text-green-500">Marketplace</Link>
           <Link href="/dashboard" className="hover:text-green-500">Dashboard</Link>
+          <Link href="/agent" className="hover:text-green-500">Agent</Link>
           <Link 
             href="/launch" 
             className="bg-green-500 hover:bg-green-600 text-black px-6 py-2 rounded-lg font-semibold flex items-center gap-2"

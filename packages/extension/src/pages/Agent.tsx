@@ -19,7 +19,7 @@ export default function Agent() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <div className={styles.logo}>EasyA Robin Bot</div>
+        <div className={styles.logo}>Raw Bean Prompt</div>
         <SettingsDropdown />
       </header>
 

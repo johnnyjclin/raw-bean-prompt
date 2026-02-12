@@ -8,15 +8,8 @@ import { config } from "@/lib/wagmi";
 import { ReactNode, useState } from "react";
 
 export function Providers({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false,
-        retry: false,
-      },
-    },
-  }));
-
+  const [queryClient] = useState(() => new QueryClient());
+  
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
